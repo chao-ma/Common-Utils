@@ -10,6 +10,10 @@ group_by_keys([(1,3),(2,4),(1,5),(1,1),(3,3)]) -> {1: [1], 3: [1, 3], 4: [2], 5:
 
 Count elements in a list
 count_elems([1,1,1,2,3,4,4]) -> {1: 3, 2: 1, 3: 1, 4: 2}
+
+insert_pos: my implementation of bisect_right, find the right most position to insert
+            an element into a sorted list and maintain the sorted order
+histogram: given a list of samples and bins, count elements in each bin
 """
 
 def slice_list(input_list, length):
@@ -34,3 +38,32 @@ def count_elems(input_list):
         else:
             key_to_count[i] = 1
     return key_to_count
+
+
+def insert_pos(input_list, elem):
+    """
+    input_list is a sorted list of elements comparable to elem.
+    It finds a position i where input_list[i - 1] <= elem < input_list[i]
+    """
+    begin = 0
+    end = len(input_list) - 1
+    while begin <= end:
+        mid = (begin + end) // 2
+        if input_list[mid] <= elem:
+            begin = mid + 1
+        else:
+            end = mid - 1
+    return begin
+
+def histogram(input_list, bins):
+    """
+    create len(bins) + 1 list
+    e.g. bins = [1,3,5,7], it will create interval [-infi, 1) [1,3), [3,5), [5,7), [7,infi)
+    and count how many elems in input_list fall into the bins
+    bins need to be sorted
+    """
+    hist = [0] * (len(bins) + 1)
+    for elem in input_list:
+        pos = insert_pos(bins, elem)
+        hist[pos] += 1
+    return hist
